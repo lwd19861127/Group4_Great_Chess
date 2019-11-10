@@ -1,4 +1,4 @@
-package board;
+package controller;
 
 public class Position {
     private int row;
