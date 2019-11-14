@@ -28,7 +28,7 @@ public class Game {
         checkStatus = none;
     }
 
-    public void creat() {
+    public void create() {
         board.initBoard();
         board.printBoard();
         operation();
