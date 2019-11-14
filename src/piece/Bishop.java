@@ -10,8 +10,21 @@ public class Bishop extends Piece{
 
     @Override
     public Boolean isValidMove(Position newPosition) {
-        return super.isValidMove(newPosition);
+        // Validation
+        if (!super.isValidMove(newPosition)){
+            return false;
+        }
+        // Attempt to move to the same cell
+        if (position.getRow() == newPosition.getRow() && position.getCol() == newPosition.getCol())
+            return false;
+        // Move logic
+        if (Math.abs(newPosition.getRow() - position.getRow()) == Math.abs(newPosition.getCol() - position.getCol())){
+            return true;
+        } else {
+            return false;
+        }
     }
+
 
     @Override
     public void move(Board board, Position newPosition) {
