@@ -4,8 +4,10 @@ import controller.Board;
 import controller.Position;
 
 public abstract class Piece {
+
     protected Position position;
     protected Boolean isWhite;
+    protected Boolean isMoved;
     protected String shape;
 
     public Piece(Position position, Boolean isWhite, String shape) {
@@ -38,14 +40,41 @@ public abstract class Piece {
         this.shape = shape;
     }
 
-    public Boolean isValidMove(Position newPosition) {
-        if (newPosition.getRow() >= 0 && newPosition.getCol() >= 0
-            && newPosition.getRow() < 8 && newPosition.getCol() < 8) {
-            return true;
-        } else {
-            return false;
-        }
+    public Boolean getMoved() {
+        return isMoved;
     }
 
-    public abstract void move(Board board, Position newPosition);
+    public void setMoved(Boolean moved) {
+        isMoved = moved;
+    }
+    public Boolean isValidPickup(Boolean isWhiteByPlayer) {
+        return isWhite == isWhiteByPlayer;
+    }
+
+    /**
+     * check common validation for all of pieces
+     * 1. move or not
+     * 2. move within board
+     * 3. destination position's piece is different color
+     * NOTE!! isExistBetween and isExistEnemyOnNewPosition are only for specific pieces
+     * @param newPosition
+     * @param isNewPositionSameColor
+     * @param isExistBetween
+     * @param isNotExistEnemyOnNewPosition
+     * @return
+     */
+    public Boolean isValidMove(Position newPosition,
+                               Boolean isNewPositionSameColor,
+                               Boolean isExistBetween,
+                               Boolean isNotExistEnemyOnNewPosition) {
+        return (position.getRow() != newPosition.getRow() || position.getCol() != newPosition.getCol())
+                && newPosition.getRow() > Board.MIN_BOARD_ROW - 2 && newPosition.getCol() > Board.MIN_BOARD_COL - 2
+                && newPosition.getRow() < Board.MAX_BOARD_ROW && newPosition.getCol() < Board.MAX_BOARD_COL
+                && !isNewPositionSameColor;
+    }
+
+    public void move(Position newPosition) {
+        position = newPosition;
+        isMoved = true;
+    }
 }
