@@ -8,7 +8,11 @@ public class Board {
     public Board() {
         board = new Piece[8][8];
     }
+    public Boolean isExistWhiteKing = true;
 
+    public Boolean getExistWhiteKing() {
+        return isExistWhiteKing;
+    }
     public Piece getPiece(Position position) {
         return board[position.getRow()][position.getCol()];
     }
@@ -16,6 +20,18 @@ public class Board {
     public void setPiece(Piece piece, Position position) {
         this.board[piece.getPosition().getRow()][piece.getPosition().getCol()] = null;
         this.board[position.getRow()][position.getCol()] = piece;
+
+    public Boolean isCapturedKing() {
+        int kingCount = 0;
+        for (int row=MIN_BOARD_ROW-1;row<MAX_BOARD_ROW;row++) {
+            for (int col=MIN_BOARD_COL-1;col<MAX_BOARD_COL;col++) {
+                if (board[row][col] instanceof King) {
+                    kingCount++;
+                    isExistWhiteKing = board[row][col].isWhite();
+                }
+            }
+        }
+        return kingCount==NORMAL_KING_COUNT;
     }
 
     public void initBoard() {

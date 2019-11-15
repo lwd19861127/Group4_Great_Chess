@@ -12,20 +12,17 @@ public class Game {
     private static String whiteInCheck = "WhiteInCheck";
     private static String blackCheckmated = "BlackCheckmated";
     private static String whiteCheckmated = "WhiteCheckmated";
-    private static String none = "None";
 
     private Board board;
     private Player whitePlayer;
     private Player blackPlayer;
     private Boolean isWhiteTurn;
-    private String checkStatus;
 
     public Game() {
         board = new Board();
         whitePlayer = new Player(true);
         blackPlayer = new Player(false);
         isWhiteTurn = true;
-        checkStatus = none;
     }
 
     public void creat() {
@@ -35,7 +32,7 @@ public class Game {
     }
 
     private void operation() {
-        while (!checkStatus.equals(whiteCheckmated) && !checkStatus.equals(blackCheckmated)) {
+        while (board.isCapturedKing()) {
             if (isWhiteTurn) {
                 System.out.print("Is White's turn, ");
                 moveProcess(whitePlayer);
@@ -45,11 +42,10 @@ public class Game {
                 moveProcess(blackPlayer);
                 isWhiteTurn = true;
             }
-            isCheckmated();
             board.printBoard();
         }
-        if (checkStatus.equals(whiteCheckmated)) {
             System.out.println("White is win");
+        if (board.getExistWhiteKing()) {
         } else {
             System.out.println("Black is win");
         }
@@ -76,11 +72,9 @@ public class Game {
         pickupPiece.move(board, putPosition);
     }
 
-    public void isChecked() {
 
     }
 
-    public void isCheckmated() {
     private String getUserStringInput(String prompt, Boolean canInputPrevious) {
         try {
             System.out.println(prompt);
