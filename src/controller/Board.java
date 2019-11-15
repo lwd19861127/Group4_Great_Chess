@@ -2,8 +2,18 @@ package controller;
 
 import piece.*;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Board {
     private Piece[][] board;
+    public final static int MAX_BOARD_ROW = 8;
+    public final static int NORMAL_KING_COUNT = 2;
+    public final static int MAX_BOARD_COL = 8;
+    public final static int MIN_BOARD_ROW = 1;
+    public final static int MIN_BOARD_COL = 1;
+    public final static List<String> POSITION_COLS = Arrays.asList("a","b","c","d","e","f","g","h");
+    public final static List<String> POSITION_ROWS = Arrays.asList("1","2","3","4","5","6","7","8");
 
     public Board() {
         board = new Piece[8][8];
@@ -17,9 +27,10 @@ public class Board {
         return board[position.getRow()][position.getCol()];
     }
 
-    public void setPiece(Piece piece, Position position) {
-        this.board[piece.getPosition().getRow()][piece.getPosition().getCol()] = null;
-        this.board[position.getRow()][position.getCol()] = piece;
+    public void setPiece(Piece piece, Position newPosition) {
+        this.board[piece.getPosition().getRow()][piece.getPosition().getCol()] = new None(new Position(piece.getPosition().getRow(), piece.getPosition().getCol()),true);;
+        this.board[newPosition.getRow()][newPosition.getCol()] = piece;
+    }
 
     public Boolean isCapturedKing() {
         int kingCount = 0;
@@ -32,6 +43,29 @@ public class Board {
             }
         }
         return kingCount==NORMAL_KING_COUNT;
+    }
+
+    public Boolean isExistBetween(Position pickupPosition , Position putPosition) {
+        int upperRow = pickupPosition.getRow() > putPosition.getRow() ? pickupPosition.getRow() : putPosition.getRow();
+        int lowerRow = pickupPosition.getRow() < putPosition.getRow() ? pickupPosition.getRow() : putPosition.getRow();
+        int upperCol = pickupPosition.getCol() > putPosition.getCol() ? pickupPosition.getCol() : putPosition.getCol();
+        int lowerCol = pickupPosition.getCol() < putPosition.getCol() ? pickupPosition.getCol() : putPosition.getCol();
+        if (upperRow == lowerRow) {
+            for (int col = lowerCol + 1; col < upperCol; col++) {
+                if (board[upperRow][col] instanceof None){} else return true;
+
+            }
+        } else if (upperCol == lowerCol) {
+            for (int row = lowerRow + 1; row < upperRow; row++) {
+                if (board[row][upperCol] instanceof None){} else return true;
+            }
+        } else {
+            int selCol = 0;
+            for (int row = lowerRow+1;row<upperRow;row++) {
+                if (board[row][lowerCol + (++selCol)] instanceof None){} else return true;
+            }
+        }
+        return false;
     }
 
     public void initBoard() {
@@ -85,6 +119,12 @@ public class Board {
         board[6][5] = pawnBlack6;
         board[6][6] = pawnBlack7;
         board[6][7] = pawnBlack8;
+
+        for (int row=5;row>1;row--) {
+            for (int col=MIN_BOARD_COL-1;col<MAX_BOARD_COL;col++) {
+                board[row][col] = new None(new Position(row, col), false);
+            }
+        }
 
         board[1][0] = pawnWhite1;
         board[1][1] = pawnWhite2;

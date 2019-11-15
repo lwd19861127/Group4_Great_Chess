@@ -2,6 +2,7 @@ package controller;
 
 import piece.*;
 
+import java.util.Scanner;
 public class Game {
     private static String white = "White";
     private static String black = "Black";
@@ -36,11 +37,9 @@ public class Game {
             if (isWhiteTurn) {
                 System.out.print("Is White's turn, ");
                 moveProcess(whitePlayer);
-                isWhiteTurn = false;
             } else {
                 System.out.print("Is Black's turn, ");
                 moveProcess(blackPlayer);
-                isWhiteTurn = true;
             }
             board.printBoard();
         }
@@ -53,18 +52,17 @@ public class Game {
     }
 
     private void moveProcess(Player player) {
-        Position pickupPosition = player.pickupPosition();
-        Piece pickupPiece = board.getPiece(pickupPosition);
-        while (pickupPiece == null || pickupPiece.isWhite() != player.isWhite()) {
-            System.out.print("Invalid input, ");
-            pickupPosition = player.pickupPosition();
-            pickupPiece = board.getPiece(pickupPosition);
+        String input = getUserStringInput(MESSAGE_INPUT_PICKUP, false);
+        Piece pickupPiece = board.getPiece(Position.getPosition(input));
+        // check can get own piece
+        while(pickupPiece instanceof None || !pickupPiece.isValidPickup(player.isWhite())) {
+            input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PICKUP, false);
+            pickupPiece = board.getPiece(Position.getPosition(input));
         }
-        Position putPosition = player.putPosition();
-        Piece putPositionPiece = board.getPiece(putPosition);
-        pickupPiece.move(board, putPosition);
-    }
 
+        input = getUserStringInput(MESSAGE_INPUT_PUT, true);
+        if (input.equals(RE_INPUT)) return;
+        Piece putPositionPiece = board.getPiece(Position.getPosition(input));
         // check input is "reinput" or valid put position
         while (!pickupPiece.isValidMove(putPositionPiece.getPosition(),
                 putPositionPiece instanceof None ? false : putPositionPiece.isWhite() == player.isWhite(),
@@ -73,7 +71,11 @@ public class Game {
             if (input.equals(RE_INPUT)) return;
             putPositionPiece = board.getPiece(Position.getPosition(input));
         }
+        board.setPiece(pickupPiece, putPositionPiece.getPosition());
+        pickupPiece.move(board, putPositionPiece.getPosition());
 
+        // change player turn
+        isWhiteTurn = !isWhiteTurn;
     }
 
     private String getUserStringInput(String prompt, Boolean canInputPrevious) {
