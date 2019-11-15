@@ -52,16 +52,21 @@ public abstract class Piece {
     }
 
     /**
-     * check below
+     * check common validation for all of pieces
      * 1. move or not
      * 2. move within board
      * 3. destination position's piece is different color
+     * NOTE!! isExistBetween and isExistEnemyOnNewPosition are only for specific pieces
      * @param newPosition
      * @param isNewPositionSameColor
      * @param isExistBetween
+     * @param isNotExistEnemyOnNewPosition
      * @return
      */
-    public Boolean isValidMove(Position newPosition, Boolean isNewPositionSameColor, Boolean isExistBetween) {
+    public Boolean isValidMove(Position newPosition,
+                               Boolean isNewPositionSameColor,
+                               Boolean isExistBetween,
+                               Boolean isNotExistEnemyOnNewPosition) {
         return (position.getRow() != newPosition.getRow() || position.getCol() != newPosition.getCol())
                 && newPosition.getRow() > Board.MIN_BOARD_ROW - 2 && newPosition.getCol() > Board.MIN_BOARD_COL - 2
                 && newPosition.getRow() < Board.MAX_BOARD_ROW && newPosition.getCol() < Board.MAX_BOARD_COL

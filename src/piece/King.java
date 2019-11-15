@@ -8,8 +8,11 @@ public class King extends Piece {
         super(position, isWhite, isWhite?"♕":"♛");
     }
 
-    public Boolean isValidMove(Position newPosition, Boolean isNewPositionSameColor, Boolean isExistBetween) {
-        if (!super.isValidMove(newPosition, isNewPositionSameColor, isExistBetween)) {
+    public Boolean isValidMove(Position newPosition,
+                               Boolean isNewPositionSameColor,
+                               Boolean isExistBetween,
+                               Boolean isNotExistEnemyOnNewPosition) {
+        if (!super.isValidMove(newPosition, isNewPositionSameColor, isExistBetween, isNotExistEnemyOnNewPosition)) {
             return false;
         }
         if ((Math.abs(newPosition.getRow() - position.getRow()) == 1

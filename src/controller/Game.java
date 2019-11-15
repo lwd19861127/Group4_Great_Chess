@@ -65,13 +65,14 @@ public class Game {
         // check input is "reinput" or valid put position
         while (!pickupPiece.isValidMove(putPositionPiece.getPosition(),
                 putPositionPiece instanceof None ? false : putPositionPiece.isWhite() == player.isWhite(),
-                board.isExistBetween(pickupPiece.getPosition(), putPositionPiece.getPosition()))) {
+                board.isExistBetween(pickupPiece.getPosition(), putPositionPiece.getPosition()),
+                putPositionPiece instanceof None)) {
             input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PUT, true);
             if (input.equals(RE_INPUT)) return;
             putPositionPiece = board.getPiece(Position.getPosition(input));
         }
         board.setPiece(pickupPiece, putPositionPiece.getPosition());
-        pickupPiece.move(board, putPositionPiece.getPosition());
+        pickupPiece.move(putPositionPiece.getPosition());
 
         // change player turn
         isWhiteTurn = !isWhiteTurn;
