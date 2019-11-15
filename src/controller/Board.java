@@ -39,7 +39,7 @@ public class Board {
                 }
             }
         }
-        return kingCount==NORMAL_KING_COUNT;
+        return kingCount!=NORMAL_KING_COUNT;
     }
 
     public Boolean isExistBetween(Position pickupPosition , Position putPosition) {
@@ -48,18 +48,18 @@ public class Board {
         int upperCol = pickupPosition.getCol() > putPosition.getCol() ? pickupPosition.getCol() : putPosition.getCol();
         int lowerCol = pickupPosition.getCol() < putPosition.getCol() ? pickupPosition.getCol() : putPosition.getCol();
         if (upperRow == lowerRow) {
-            for (int col = lowerCol + 1; col < upperCol; col++) {
-                if (board[upperRow][col] instanceof None){} else return true;
+            for (int col = lowerCol+1;col<upperCol;col++) {
+                if (!(board[upperRow][col] instanceof None)) return true;
 
             }
         } else if (upperCol == lowerCol) {
-            for (int row = lowerRow + 1; row < upperRow; row++) {
-                if (board[row][upperCol] instanceof None){} else return true;
+            for (int row = lowerRow+1;row<upperRow;row++) {
+                if (!(board[row][upperCol] instanceof None)) return true;
             }
         } else {
             int selCol = 0;
             for (int row = lowerRow+1;row<upperRow;row++) {
-                if (board[row][lowerCol + (++selCol)] instanceof None){} else return true;
+                if (!(board[row][lowerCol + (++selCol)] instanceof None)) return true;
             }
         }
         return false;

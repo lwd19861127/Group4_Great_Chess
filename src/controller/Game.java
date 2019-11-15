@@ -26,14 +26,14 @@ public class Game {
         isWhiteTurn = true;
     }
 
-    public void creat() {
+    public void create() {
         board.initBoard();
         board.printBoard();
         operation();
     }
 
     private void operation() {
-        while (board.isCapturedKing()) {
+        while (!board.isCapturedKing()) {
             if (isWhiteTurn) {
                 System.out.print(MESSAGE_WHITE_TURN);
                 moveProcess(whitePlayer);
@@ -53,6 +53,7 @@ public class Game {
     private void moveProcess(Player player) {
         String input = getUserStringInput(MESSAGE_INPUT_PICKUP, false);
         Piece pickupPiece = board.getPiece(Position.getPosition(input));
+
         // check can get own piece
         while(pickupPiece instanceof None || !pickupPiece.isValidPickup(player.isWhite())) {
             input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PICKUP, false);
@@ -62,7 +63,9 @@ public class Game {
         input = getUserStringInput(MESSAGE_INPUT_PUT, true);
         if (input.equals(RE_INPUT)) return;
         Piece putPositionPiece = board.getPiece(Position.getPosition(input));
+
         // check input is "reinput" or valid put position
+        // when check isNewPositionSameColor(isValidMove's second parameter), if putpossition is NonePiece, set false
         while (!pickupPiece.isValidMove(putPositionPiece.getPosition(),
                 putPositionPiece instanceof None ? false : putPositionPiece.isWhite() == player.isWhite(),
                 board.isExistBetween(pickupPiece.getPosition(), putPositionPiece.getPosition()),
