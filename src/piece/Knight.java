@@ -10,7 +10,18 @@ public class Knight extends Piece{
 
     @Override
     public Boolean isValidMove(Position newPosition) {
-        return super.isValidMove(newPosition);
+        if (!super.isValidMove(newPosition)) {
+            return false;
+        }
+        int newRow = newPosition.getRow();
+        int oldRow = position.getRow();
+        int newCol = newPosition.getCol();
+        int oldCol = position.getCol();
+        if ((Math.abs(newRow - oldRow) == 2 && Math.abs(newCol - oldCol) == 1)
+                || (Math.abs(newRow - oldRow) == 1 && Math.abs(newCol - oldCol) == 2)) {
+            return true;
+        }
+        return false;
     }
 
     @Override
