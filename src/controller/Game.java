@@ -62,16 +62,17 @@ public class Game {
         }
         Position putPosition = player.putPosition();
         Piece putPositionPiece = board.getPiece(putPosition);
-        while (!(pickupPiece.isValidMove(putPosition)
-                &&
-                (putPositionPiece == null || putPositionPiece.isWhite() != player.isWhite()))) {
-            System.out.print("Invalid input, ");
-            putPosition = player.putPosition();
-            putPositionPiece = board.getPiece(putPosition);
-        }
         pickupPiece.move(board, putPosition);
     }
 
+        // check input is "reinput" or valid put position
+        while (!pickupPiece.isValidMove(putPositionPiece.getPosition(),
+                putPositionPiece instanceof None ? false : putPositionPiece.isWhite() == player.isWhite(),
+                board.isExistBetween(pickupPiece.getPosition(), putPositionPiece.getPosition()))) {
+            input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PUT, true);
+            if (input.equals(RE_INPUT)) return;
+            putPositionPiece = board.getPiece(Position.getPosition(input));
+        }
 
     }
 
