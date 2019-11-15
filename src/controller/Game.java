@@ -81,6 +81,29 @@ public class Game {
     }
 
     public void isCheckmated() {
+    private String getUserStringInput(String prompt, Boolean canInputPrevious) {
+        try {
+            System.out.println(prompt);
+            String input = new Scanner(System.in).nextLine();
+            if (canInputPrevious && input.equals(RE_INPUT)) {
+                return input;
+            }
+            while (!isValidInput(input)) {
+                input = getUserStringInput(MESSAGE_INPUT_INVALID + prompt, canInputPrevious);
+            }
+            return input;
+        } catch (Exception e) {
+            System.out.println(e);
+            return "";
+        }
+    }
 
+    private static boolean isValidInput(String input) {
+        if (input.length() < 2) {
+            return false;
+        }
+        String string1 = input.substring(0, 1);
+        String string2 = input.substring(1, 2);
+        return Board.POSITION_COLS.contains(string1) && Board.POSITION_ROWS.contains(string2);
     }
 }
