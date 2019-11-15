@@ -51,13 +51,24 @@ public abstract class Piece {
         return isWhite == isWhiteByPlayer;
     }
 
+    /**
+     * check below
+     * 1. move or not
+     * 2. move within board
+     * 3. destination position's piece is different color
+     * @param newPosition
+     * @param isNewPositionSameColor
+     * @param isExistBetween
+     * @return
+     */
     public Boolean isValidMove(Position newPosition, Boolean isNewPositionSameColor, Boolean isExistBetween) {
-        return newPosition.getRow() > Board.MIN_BOARD_ROW - 2 && newPosition.getCol() > Board.MIN_BOARD_COL - 2
+        return (position.getRow() != newPosition.getRow() || position.getCol() != newPosition.getCol())
+                && newPosition.getRow() > Board.MIN_BOARD_ROW - 2 && newPosition.getCol() > Board.MIN_BOARD_COL - 2
                 && newPosition.getRow() < Board.MAX_BOARD_ROW && newPosition.getCol() < Board.MAX_BOARD_COL
-                && !isNewPositionSameColor && !isExistBetween;
+                && !isNewPositionSameColor;
     }
 
-    public void move(Board board, Position newPosition) {
+    public void move(Position newPosition) {
         position = newPosition;
         isMoved = true;
     }
