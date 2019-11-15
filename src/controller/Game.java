@@ -3,16 +3,16 @@ package controller;
 import piece.*;
 
 import java.util.Scanner;
+
 public class Game {
-    private static String white = "White";
-    private static String black = "Black";
-    private static String blackWin = "BlackWin";
-    private static String whiteWin = "WhiteWin";
-    private static String draw = "Draw";
-    private static String blackInCheck = "BlackInCheck";
-    private static String whiteInCheck = "WhiteInCheck";
-    private static String blackCheckmated = "BlackCheckmated";
-    private static String whiteCheckmated = "WhiteCheckmated";
+    private static String RE_INPUT = "reinput";
+    private static String MESSAGE_INPUT_PICKUP = "Which piece would you like to pick up?";
+    private static String MESSAGE_INPUT_PUT = "Enter position you wanna put.\nif you want to change picked up piece, Enter \"reinput\"";
+    private static String MESSAGE_INPUT_INVALID = "Invalid input, ";
+    private static String MESSAGE_WHITE_TURN = "Is White's turn, ";
+    private static String MESSAGE_BLACK_TURN = "Is Black's turn, ";
+    private static String MESSAGE_WHITE_WIN = "White WIN!";
+    private static String MESSAGE_BLACK_WIN = "Black WIN!";
 
     private Board board;
     private Player whitePlayer;
@@ -35,20 +35,19 @@ public class Game {
     private void operation() {
         while (board.isCapturedKing()) {
             if (isWhiteTurn) {
-                System.out.print("Is White's turn, ");
+                System.out.print(MESSAGE_WHITE_TURN);
                 moveProcess(whitePlayer);
             } else {
-                System.out.print("Is Black's turn, ");
+                System.out.print(MESSAGE_BLACK_TURN);
                 moveProcess(blackPlayer);
             }
             board.printBoard();
         }
-            System.out.println("White is win");
         if (board.getExistWhiteKing()) {
+            System.out.println(MESSAGE_WHITE_WIN);
         } else {
-            System.out.println("Black is win");
+            System.out.println(MESSAGE_BLACK_WIN);
         }
-
     }
 
     private void moveProcess(Player player) {

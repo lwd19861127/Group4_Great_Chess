@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Board {
-    private Piece[][] board;
     public final static int MAX_BOARD_ROW = 8;
     public final static int NORMAL_KING_COUNT = 2;
     public final static int MAX_BOARD_COL = 8;
@@ -15,10 +14,8 @@ public class Board {
     public final static List<String> POSITION_COLS = Arrays.asList("a","b","c","d","e","f","g","h");
     public final static List<String> POSITION_ROWS = Arrays.asList("1","2","3","4","5","6","7","8");
 
-    public Board() {
-        board = new Piece[8][8];
-    }
     public Boolean isExistWhiteKing = true;
+    private Piece[][] board = new Piece[MAX_BOARD_ROW][MAX_BOARD_COL];
 
     public Boolean getExistWhiteKing() {
         return isExistWhiteKing;
@@ -145,17 +142,18 @@ public class Board {
     }
 
     public void printBoard() {
-        for (int i = board.length - 1; i >= 0; i--) {
-            System.out.print(i + 1 + " ");
-            for (int j = 0; j < board[i].length; j++) {
-                if (board[i][j] != null) {
-                    System.out.print(board[i][j].getShape() + " ");
-                } else {
-                    System.out.print("* ");
-                }
+        String rows = "     a    b    c    d    e    f    g    h \n";
+        for (int row = board.length - 1; row >= 0; row--) {
+            rows += "  ==========================================\n";
+            rows += (row + 1) + " || ";
+            String cols = "";
+            for (int col = 0; col < board[row].length; col++) {
+                cols += board[row][col].getShape() + " || ";
             }
-            System.out.println();
+            rows += cols + " " + (row + 1) + "\n";
         }
-        System.out.println("  a b c d e f g h ");
+        rows += "  ==========================================\n";
+        rows += "     a    b    c    d    e    f    g    h ";
+        System.out.println(rows);
     }
 }
