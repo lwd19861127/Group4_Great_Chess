@@ -10,7 +10,10 @@ public class Bishop extends Piece{
 
     @Override
     public Boolean isValidMove(Position newPosition) {
-        return super.isValidMove(newPosition);
+        if (!super.isValidMove(newPosition))return false;
+        if (Math.abs(newPosition.getRow() - position.getRow()) == Math.abs(newPosition.getCol() - position.getCol()) && isExistBetween){
+            return true;
+        } else return false;
     }
 
     @Override
