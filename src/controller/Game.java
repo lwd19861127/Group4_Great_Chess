@@ -2,85 +2,108 @@ package controller;
 
 import piece.*;
 
+import java.util.Scanner;
+
 public class Game {
-    private static String white = "White";
-    private static String black = "Black";
-    private static String blackWin = "BlackWin";
-    private static String whiteWin = "WhiteWin";
-    private static String draw = "Draw";
-    private static String blackInCheck = "BlackInCheck";
-    private static String whiteInCheck = "WhiteInCheck";
-    private static String blackCheckmated = "BlackCheckmated";
-    private static String whiteCheckmated = "WhiteCheckmated";
-    private static String none = "None";
+    private static String RE_INPUT = "reinput";
+    private static String MESSAGE_INPUT_PICKUP = "Which piece would you like to pick up?";
+    private static String MESSAGE_INPUT_PUT = "Enter position you wanna put.\nif you want to change picked up piece, Enter \"reinput\"";
+    private static String MESSAGE_INPUT_INVALID = "Invalid input, ";
+    private static String MESSAGE_WHITE_TURN = "Is White's turn, ";
+    private static String MESSAGE_BLACK_TURN = "Is Black's turn, ";
+    private static String MESSAGE_WHITE_WIN = "White WIN!";
+    private static String MESSAGE_BLACK_WIN = "Black WIN!";
 
     private Board board;
     private Player whitePlayer;
     private Player blackPlayer;
     private Boolean isWhiteTurn;
-    private String checkStatus;
 
     public Game() {
         board = new Board();
         whitePlayer = new Player(true);
         blackPlayer = new Player(false);
         isWhiteTurn = true;
-        checkStatus = none;
     }
 
-    public void creat() {
+    public void create() {
         board.initBoard();
         board.printBoard();
         operation();
     }
 
     private void operation() {
-        while (!checkStatus.equals(whiteCheckmated) && !checkStatus.equals(blackCheckmated)) {
+        while (!board.isCapturedKing()) {
             if (isWhiteTurn) {
-                System.out.print("Is White's turn, ");
+                System.out.print(MESSAGE_WHITE_TURN);
                 moveProcess(whitePlayer);
-                isWhiteTurn = false;
             } else {
-                System.out.print("Is Black's turn, ");
+                System.out.print(MESSAGE_BLACK_TURN);
                 moveProcess(blackPlayer);
-                isWhiteTurn = true;
             }
-            isCheckmated();
             board.printBoard();
         }
-        if (checkStatus.equals(whiteCheckmated)) {
-            System.out.println("White is win");
+        if (board.getExistWhiteKing()) {
+            System.out.println(MESSAGE_WHITE_WIN);
         } else {
-            System.out.println("Black is win");
+            System.out.println(MESSAGE_BLACK_WIN);
         }
-
     }
 
     private void moveProcess(Player player) {
-        Position pickupPosition = player.pickupPosition();
-        Piece pickupPiece = board.getPiece(pickupPosition);
-        while (pickupPiece == null || pickupPiece.isWhite() != player.isWhite()) {
-            System.out.print("Invalid input, ");
-            pickupPosition = player.pickupPosition();
-            pickupPiece = board.getPiece(pickupPosition);
+        String input = getUserStringInput(MESSAGE_INPUT_PICKUP, false);
+        Piece pickupPiece = board.getPiece(Position.getPosition(input));
+
+        // check can get own piece
+        while(pickupPiece instanceof None || !pickupPiece.isValidPickup(player.isWhite())) {
+            input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PICKUP, false);
+            pickupPiece = board.getPiece(Position.getPosition(input));
         }
-        Position putPosition = player.putPosition();
-        Piece putPositionPiece = board.getPiece(putPosition);
-        while (!(pickupPiece.isValidMove(putPosition)
-                &&
-                (putPositionPiece == null || putPositionPiece.isWhite() != player.isWhite()))) {
-            System.out.print("Invalid input, ");
-            putPosition = player.putPosition();
-            putPositionPiece = board.getPiece(putPosition);
+
+        input = getUserStringInput(MESSAGE_INPUT_PUT, true);
+        if (input.equals(RE_INPUT)) return;
+        Piece putPositionPiece = board.getPiece(Position.getPosition(input));
+
+        // check input is "reinput" or valid put position
+        // when check isNewPositionSameColor(isValidMove's second parameter), if putpossition is NonePiece, set false
+        while (!pickupPiece.isValidMove(putPositionPiece.getPosition(),
+                putPositionPiece instanceof None ? false : putPositionPiece.isWhite() == player.isWhite(),
+                board.isExistBetween(pickupPiece.getPosition(), putPositionPiece.getPosition()),
+                putPositionPiece instanceof None)) {
+            input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PUT, true);
+            if (input.equals(RE_INPUT)) return;
+            putPositionPiece = board.getPiece(Position.getPosition(input));
         }
-        pickupPiece.move(board, putPosition);
+        board.setPiece(pickupPiece, putPositionPiece.getPosition());
+        pickupPiece.move(putPositionPiece.getPosition());
+
+        // change player turn
+        isWhiteTurn = !isWhiteTurn;
     }
 
-    public void isChecked() {
-
+    private String getUserStringInput(String prompt, Boolean canInputPrevious) {
+        try {
+            System.out.println(prompt);
+            String input = new Scanner(System.in).nextLine();
+            if (canInputPrevious && input.equals(RE_INPUT)) {
+                return input;
+            }
+            while (!isValidInput(input)) {
+                input = getUserStringInput(MESSAGE_INPUT_INVALID + prompt, canInputPrevious);
+            }
+            return input;
+        } catch (Exception e) {
+            System.out.println(e);
+            return "";
+        }
     }
 
-    public void isCheckmated() {
-
+    private static boolean isValidInput(String input) {
+        if (input.length() < 2) {
+            return false;
+        }
+        String string1 = input.substring(0, 1);
+        String string2 = input.substring(1, 2);
+        return Board.POSITION_COLS.contains(string1) && Board.POSITION_ROWS.contains(string2);
     }
 }
