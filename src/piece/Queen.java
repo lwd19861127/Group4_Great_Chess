@@ -10,9 +10,9 @@ public class Queen extends Piece{
     @Override
     public Boolean isValidMove(Position newPosition) {
         if (!super.isValidMove(newPosition)) return false;
-        if (Math.abs(newPosition.getRow() - position.getRow()) == Math.abs(newPosition.getCol() - position.getCol())||
+        if (Math.abs((newPosition.getRow() - position.getRow()) == Math.abs(newPosition.getCol() - position.getCol())||
                      newPosition.getCol() == position.getCol() && newPosition.getRow() != position.getRow() ||
-                     newPosition.getCol() != position.getCol() && newPosition.getRow() == position.getRow()
+                     newPosition.getCol() != position.getCol() && newPosition.getRow() == position.getRow())
                      && isExistBetween){
             return true;
         } else return false;
