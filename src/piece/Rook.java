@@ -23,10 +23,7 @@ public class Rook extends Piece{
         // It's not same position
         // When Row is same position, Col can be anywhere
         // When Col is same position, Row can be anywhere
-        if (!(newRow == oldRow && newCol == oldCol)
-                && ((newRow == oldRow && newCol != oldCol)
-                || newCol == oldCol && newRow != oldCol)
-                && !isExistBetween) {
+        if ((newRow == oldRow || newCol == oldCol) && !isExistBetween) {
             return true;
         }
         return false;
