@@ -122,7 +122,23 @@ public class Board {
         }
     }
 
+    public void promoteMove(Piece pickupPiece, Piece putPositionPiece, PieceEnum changePiece) {
+        Piece newPiece;
+        switch (changePiece) {
+            case ROOK:
+                newPiece = new Rook(new Position(pickupPiece.getPosition().getRow(), pickupPiece.getPosition().getCol()),pickupPiece.isWhite());
+                break;
+            case BISHOP:
+                newPiece = new Bishop(new Position(pickupPiece.getPosition().getRow(), pickupPiece.getPosition().getCol()),pickupPiece.isWhite());
+                break;
+            case KNIGHT:
+                newPiece = new Knight(new Position(pickupPiece.getPosition().getRow(), pickupPiece.getPosition().getCol()),pickupPiece.isWhite());
+                break;
+            default:
+                newPiece = new Queen(new Position(pickupPiece.getPosition().getRow(), pickupPiece.getPosition().getCol()),pickupPiece.isWhite());
+                break;
         }
+        move(newPiece, putPositionPiece);
     }
 
     public Pawn getBehindTwoMovePawn(Boolean playerWhite, Piece putPiece) {
@@ -136,6 +152,13 @@ public class Board {
             }
         }
         return null;
+    }
+
+    public Boolean canPromote(Piece pickupPiece, Piece putPiece) {
+        if (!(pickupPiece instanceof Pawn)) return false;
+        if (pickupPiece.isWhite() && putPiece.getPosition().getRow() == MAX_BOARD_ROW-1) return true;
+        else if (!pickupPiece.isWhite() && putPiece.getPosition().getRow() == MIN_BOARD_ROW-1) return true;
+        else return false;
     }
 
     public void initBoard() {

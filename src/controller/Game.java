@@ -52,40 +52,57 @@ public class Game {
     }
 
     private void moveProcess(Player player) {
-        String input = getUserStringInput(MESSAGE_INPUT_PICKUP, false);
+        String input = getUserStringInput(MESSAGE_INPUT_PICKUP, false, false);
         Piece pickupPiece = board.getPiece(Position.getPosition(input));
 
         // check can get own piece
         while(board.isValidPickup(pickupPiece, player.isWhite())) {
-            input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PICKUP, false);
+            input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PICKUP, false, false);
             pickupPiece = board.getPiece(Position.getPosition(input));
         }
 
-        input = getUserStringInput(MESSAGE_INPUT_PUT, true);
+        input = getUserStringInput(MESSAGE_INPUT_PUT, true, false);
         if (input.equals(RE_INPUT)) return;
-        Piece putPositionPiece = board.getPiece(Position.getPosition(input));
+        Piece putPiece = board.getPiece(Position.getPosition(input));
 
         // check input is "reinput" or valid put position
-        while (!board.isValidPut(pickupPiece, putPositionPiece, player.isWhite())) {
-            input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PUT, true);
+        while (!board.isValidPut(pickupPiece, putPiece, player.isWhite())) {
+            input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PUT, true, false);
             if (input.equals(RE_INPUT)) return;
-            putPositionPiece = board.getPiece(Position.getPosition(input));
+            putPiece = board.getPiece(Position.getPosition(input));
         }
-        board.move(pickupPiece, putPositionPiece);
 
+        // Promotion
+        if (board.canPromote(pickupPiece, putPiece)) {
+            input = getUserStringInput(MESSAGE_INPUT_PROMOTION, false, true);
+
+            // check can get own piece
+            while(!PieceEnum.validPromotion(input)) {
+                input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PROMOTION, false, true);
+            }
+            board.promoteMove(pickupPiece, putPiece, PieceEnum.get(input));
+        } else {
+            board.move(pickupPiece, putPiece);
+        }
         // change player turn
         isWhiteTurn = !isWhiteTurn;
     }
 
-    private String getUserStringInput(String prompt, Boolean canInputAgain) {
+    private String getUserStringInput(String prompt, Boolean canInputAgain, Boolean canPromote) {
         try {
             System.out.println(prompt);
             String input = new Scanner(System.in).nextLine();
             if (canInputAgain && input.equals(RE_INPUT)) {
                 return input;
             }
+            else if (canPromote && PieceEnum.validPromotion(input)) {
+                return input;
+            }
             while (!isValidInput(input)) {
-                input = getUserStringInput(MESSAGE_INPUT_INVALID + prompt, canInputAgain);
+                input = getUserStringInput(
+                        prompt.indexOf(MESSAGE_INPUT_INVALID) == -1 ? MESSAGE_INPUT_INVALID + prompt : prompt,
+                        canInputAgain,
+                        canPromote);
             }
             return input;
         } catch (Exception e) {
