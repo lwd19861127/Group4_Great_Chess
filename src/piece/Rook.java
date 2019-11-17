@@ -26,8 +26,7 @@ public class Rook extends Piece{
         if (!(newRow == oldRow && newCol == oldCol)
                 && ((newRow == oldRow && newCol != oldCol)
                 || newCol == oldCol && newRow != oldCol)
-                && isExistBetween
-                && isNotExistEnemyOnNewPosition) {
+                && !isExistBetween) {
             return true;
         }
         return false;
