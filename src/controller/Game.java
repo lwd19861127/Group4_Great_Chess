@@ -9,8 +9,8 @@ public class Game {
     private static String MESSAGE_INPUT_PICKUP = "Which piece would you like to pick up?";
     private static String MESSAGE_INPUT_PUT = "Enter position you wanna put.\nif you want to change picked up piece, Enter \"reinput\"";
     private static String MESSAGE_INPUT_INVALID = "Invalid input, ";
-    private static String MESSAGE_WHITE_TURN = "Is White's turn, ";
-    private static String MESSAGE_BLACK_TURN = "Is Black's turn, ";
+    private static String MESSAGE_WHITE_TURN = "White's turn, ";
+    private static String MESSAGE_BLACK_TURN = "Black's turn, ";
     private static String MESSAGE_WHITE_WIN = "White WIN!";
     private static String MESSAGE_BLACK_WIN = "Black WIN!";
 
@@ -55,7 +55,7 @@ public class Game {
         Piece pickupPiece = board.getPiece(Position.getPosition(input));
 
         // check can get own piece
-        while(pickupPiece instanceof None || !pickupPiece.isValidPickup(player.isWhite())) {
+        while(board.isValidPickup(pickupPiece, player.isWhite())) {
             input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PICKUP, false);
             pickupPiece = board.getPiece(Position.getPosition(input));
         }
@@ -65,31 +65,26 @@ public class Game {
         Piece putPositionPiece = board.getPiece(Position.getPosition(input));
 
         // check input is "reinput" or valid put position
-        // when check isNewPositionSameColor(isValidMove's second parameter), if putpossition is NonePiece, set false
-        while (!pickupPiece.isValidMove(putPositionPiece.getPosition(),
-                putPositionPiece instanceof None ? false : putPositionPiece.isWhite() == player.isWhite(),
-                board.isExistBetween(pickupPiece.getPosition(), putPositionPiece.getPosition()),
-                putPositionPiece instanceof None)) {
+        while (!board.isValidPut(pickupPiece, putPositionPiece, player.isWhite())) {
             input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PUT, true);
             if (input.equals(RE_INPUT)) return;
             putPositionPiece = board.getPiece(Position.getPosition(input));
         }
-        board.setPiece(pickupPiece, putPositionPiece.getPosition());
-        pickupPiece.move(putPositionPiece.getPosition());
+        board.move(pickupPiece, putPositionPiece);
 
         // change player turn
         isWhiteTurn = !isWhiteTurn;
     }
 
-    private String getUserStringInput(String prompt, Boolean canInputPrevious) {
+    private String getUserStringInput(String prompt, Boolean canInputAgain) {
         try {
             System.out.println(prompt);
             String input = new Scanner(System.in).nextLine();
-            if (canInputPrevious && input.equals(RE_INPUT)) {
+            if (canInputAgain && input.equals(RE_INPUT)) {
                 return input;
             }
             while (!isValidInput(input)) {
-                input = getUserStringInput(MESSAGE_INPUT_INVALID + prompt, canInputPrevious);
+                input = getUserStringInput(MESSAGE_INPUT_INVALID + prompt, canInputAgain);
             }
             return input;
         } catch (Exception e) {
