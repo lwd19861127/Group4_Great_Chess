@@ -9,8 +9,11 @@ public class Knight extends Piece{
     }
 
     @Override
-    public Boolean isValidMove(Position newPosition) {
-        if (!super.isValidMove(newPosition)) {
+    public Boolean isValidMove(Position newPosition,
+                               Boolean isNewPositionSameColor,
+                               Boolean isExistBetween,
+                               Boolean isNotExistEnemyOnNewPosition) {
+        if (!super.isValidMove(newPosition, isNewPositionSameColor, isExistBetween, isNotExistEnemyOnNewPosition)) {
             return false;
         }
         int newRow = newPosition.getRow();
@@ -18,17 +21,10 @@ public class Knight extends Piece{
         int newCol = newPosition.getCol();
         int oldCol = position.getCol();
         if ((Math.abs(newRow - oldRow) == 2 && Math.abs(newCol - oldCol) == 1)
-                || (Math.abs(newRow - oldRow) == 1 && Math.abs(newCol - oldCol) == 2)) {
+                || (Math.abs(newRow - oldRow) == 1 && Math.abs(newCol - oldCol) == 2)
+                && isNotExistEnemyOnNewPosition) {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void move(Board board, Position newPosition) {
-        if (isValidMove(newPosition)) {
-            board.setPiece(this, newPosition);
-            super.position = newPosition;
-        }
     }
 }
