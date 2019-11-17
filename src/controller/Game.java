@@ -8,6 +8,7 @@ public class Game {
     private static String RE_INPUT = "reinput";
     private static String MESSAGE_INPUT_PICKUP = "Which piece would you like to pick up?";
     private static String MESSAGE_INPUT_PUT = "Enter position you wanna put.\nif you want to change picked up piece, Enter \"reinput\"";
+    private static String MESSAGE_INPUT_PROMOTION = "You can promote your Pawn. Choose \"queen\", \"rook\", \"bishop\", \"knight\"";
     private static String MESSAGE_INPUT_INVALID = "Invalid input, ";
     private static String MESSAGE_WHITE_TURN = "White's turn, ";
     private static String MESSAGE_BLACK_TURN = "Black's turn, ";
@@ -94,7 +95,7 @@ public class Game {
     }
 
     private static boolean isValidInput(String input) {
-        if (input.length() < 2) {
+        if (input.length() != 2) {
             return false;
         }
         String string1 = input.substring(0, 1);

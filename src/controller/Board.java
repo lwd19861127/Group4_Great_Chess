@@ -58,32 +58,70 @@ public class Board {
         int lowerRow = pickupPosition.getRow() < putPosition.getRow() ? pickupPosition.getRow() : putPosition.getRow();
         int upperCol = pickupPosition.getCol() > putPosition.getCol() ? pickupPosition.getCol() : putPosition.getCol();
         int lowerCol = pickupPosition.getCol() < putPosition.getCol() ? pickupPosition.getCol() : putPosition.getCol();
+        // move horizontal
         if (upperRow == lowerRow) {
             for (int col = lowerCol+1;col<upperCol;col++) {
                 if (!(board[upperRow][col] instanceof None)) return true;
             }
+            // move vertical
         } else if (upperCol == lowerCol) {
             for (int row = lowerRow+1;row<upperRow;row++) {
                 if (!(board[row][upperCol] instanceof None)) return true;
             }
-        } else {
-            int selCol = 0;
-            for (int row = lowerRow+1;row<upperRow;row++) {
-                if (!(board[row][lowerCol + (++selCol)] instanceof None)) return true;
+            // move diagonal
+        } else if (Math.abs(upperRow - lowerRow) == Math.abs(upperCol - lowerCol)) {
+            // forward to left down
+            if (pickupPosition.getRow() > putPosition.getRow() && pickupPosition.getCol() > putPosition.getCol()) {
+                int seqCol = putPosition.getCol() + 1;
+                    for (int row = putPosition.getRow()+1;row<pickupPosition.getRow();row++) {
+                        if (!(board[row][seqCol] instanceof None)) return true;
+                        seqCol++;
+                    }
+            }
+            // forward to right up
+            else if (pickupPosition.getRow() < putPosition.getRow() && pickupPosition.getCol() < putPosition.getCol()) {
+                int seqCol = pickupPosition.getCol() + 1;
+                for (int row = pickupPosition.getRow()+1;row<putPosition.getRow();row++) {
+                    if (!(board[row][seqCol] instanceof None)) return true;
+                    seqCol++;
+                }
+            }
+            // forward to left up
+            else if (pickupPosition.getRow() < putPosition.getRow() && pickupPosition.getCol() > putPosition.getCol()) {
+                int seqCol = pickupPosition.getCol() - 1;
+                for (int row = pickupPosition.getRow()+1;row<putPosition.getRow();row++) {
+                    if (!(board[row][seqCol] instanceof None)) return true;
+                    seqCol--;
+                }
+            }
+            // forward to right down
+            else if (pickupPosition.getRow() > putPosition.getRow() && pickupPosition.getCol() < putPosition.getCol()) {
+                int seqCol = putPosition.getCol() - 1;
+                for (int row = putPosition.getRow()+1;row<pickupPosition.getRow();row++) {
+                    if (!(board[row][seqCol] instanceof None)) return true;
+                    seqCol--;
+                }
             }
         }
         return false;
+    }
+
+    public void enPassant(Piece pickupPiece, Piece putPositionPiece) {
+        Pawn behindTwoMovePawn = getBehindTwoMovePawn(pickupPiece.isWhite(), putPositionPiece);
+        Piece none = new None(new Position(behindTwoMovePawn.getPosition().getRow(), behindTwoMovePawn.getPosition().getCol()), false);
+        setPiece(none, behindTwoMovePawn.getPosition());
     }
 
     public void move(Piece pickupPiece, Piece putPositionPiece) {
         setPiece(pickupPiece, putPositionPiece.getPosition());
         pickupPiece.move(putPositionPiece.getPosition());
 
-        // En passant
-        Pawn behindTwoMovePawn = getBehindTwoMovePawn(pickupPiece.isWhite(), putPositionPiece);
-        if (behindTwoMovePawn != null) {
-            Piece none = new None(new Position(behindTwoMovePawn.getPosition().getRow(), behindTwoMovePawn.getPosition().getCol()), false);
-            setPiece(none, behindTwoMovePawn.getPosition());
+        Boolean canEnPassant = getBehindTwoMovePawn(pickupPiece.isWhite(), putPositionPiece) != null;
+        if (canEnPassant) {
+            enPassant(pickupPiece, putPositionPiece);
+        }
+    }
+
         }
     }
 

@@ -7,7 +7,7 @@ public abstract class Piece {
 
     protected Position position;
     protected Boolean isWhite;
-    protected Boolean isMoved;
+    protected Boolean isMoved = false;
     protected String shape;
 
     public Piece(Position position, Boolean isWhite, String shape) {

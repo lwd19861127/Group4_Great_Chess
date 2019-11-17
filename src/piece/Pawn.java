@@ -37,8 +37,9 @@ public class Pawn extends Piece{
     public void move(Position newPosition) {
         if (Math.abs(position.getRow() - newPosition.getRow()) == 2) {
             isAfterMoveTwo = true;
+        } else if (isAfterMoveTwo) {
+            isAfterMoveTwo = false;
         }
-        position = newPosition;
-        isMoved = true;
+        super.move(newPosition);
     }
 }
