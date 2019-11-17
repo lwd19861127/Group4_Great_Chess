@@ -21,8 +21,7 @@ public class Knight extends Piece{
         int newCol = newPosition.getCol();
         int oldCol = position.getCol();
         if ((Math.abs(newRow - oldRow) == 2 && Math.abs(newCol - oldCol) == 1)
-                || (Math.abs(newRow - oldRow) == 1 && Math.abs(newCol - oldCol) == 2)
-                && isNotExistEnemyOnNewPosition) {
+                || (Math.abs(newRow - oldRow) == 1 && Math.abs(newCol - oldCol) == 2)) {
             return true;
         }
         return false;
