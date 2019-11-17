@@ -9,8 +9,11 @@ public class Knight extends Piece{
     }
 
     @Override
-    public Boolean isValidMove(Position newPosition) {
-        if (!super.isValidMove(newPosition)) {
+    public Boolean isValidMove(Position newPosition,
+                               Boolean isNewPositionSameColor,
+                               Boolean isExistBetween,
+                               Boolean isNotExistEnemyOnNewPosition) {
+        if (!super.isValidMove(newPosition, isNewPositionSameColor, isExistBetween, isNotExistEnemyOnNewPosition)) {
             return false;
         }
         int newRow = newPosition.getRow();
@@ -22,13 +25,5 @@ public class Knight extends Piece{
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void move(Board board, Position newPosition) {
-        if (isValidMove(newPosition)) {
-            board.setPiece(this, newPosition);
-            super.position = newPosition;
-        }
     }
 }
