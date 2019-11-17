@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Board {
+    public final static int NORMAL_KING_NORMAL = 2;
     public final static int MAX_BOARD_ROW = 8;
-    public final static int NORMAL_KING_COUNT = 2;
     public final static int MAX_BOARD_COL = 8;
     public final static int MIN_BOARD_ROW = 1;
     public final static int MIN_BOARD_COL = 1;
@@ -25,7 +25,8 @@ public class Board {
     }
 
     public void setPiece(Piece piece, Position newPosition) {
-        this.board[piece.getPosition().getRow()][piece.getPosition().getCol()] = new None(new Position(piece.getPosition().getRow(), piece.getPosition().getCol()),true);;
+        this.board[piece.getPosition().getRow()][piece.getPosition().getCol()] =
+                new None(new Position(piece.getPosition().getRow(), piece.getPosition().getCol()),true);;
         this.board[newPosition.getRow()][newPosition.getCol()] = piece;
     }
 
@@ -39,9 +40,19 @@ public class Board {
                 }
             }
         }
-        return kingCount!=NORMAL_KING_COUNT;
+        return kingCount != NORMAL_KING_NORMAL;
     }
 
+    public Boolean isValidPickup(Piece pickupPiece, Boolean isPlayerWhite) {
+        return pickupPiece instanceof None || !pickupPiece.isValidPickup(isPlayerWhite);
+    }
+
+    public Boolean isValidPut(Piece pickupPiece, Piece putPositionPiece, Boolean isPlayerWhite) {
+        return pickupPiece.isValidMove(putPositionPiece.getPosition(),
+                putPositionPiece instanceof None ? false : putPositionPiece.isWhite() == isPlayerWhite,
+                isExistBetween(pickupPiece.getPosition(), putPositionPiece.getPosition()),
+                putPositionPiece instanceof None);
+    }
     public Boolean isExistBetween(Position pickupPosition , Position putPosition) {
         int upperRow = pickupPosition.getRow() > putPosition.getRow() ? pickupPosition.getRow() : putPosition.getRow();
         int lowerRow = pickupPosition.getRow() < putPosition.getRow() ? pickupPosition.getRow() : putPosition.getRow();
@@ -50,7 +61,6 @@ public class Board {
         if (upperRow == lowerRow) {
             for (int col = lowerCol+1;col<upperCol;col++) {
                 if (!(board[upperRow][col] instanceof None)) return true;
-
             }
         } else if (upperCol == lowerCol) {
             for (int row = lowerRow+1;row<upperRow;row++) {
@@ -63,6 +73,31 @@ public class Board {
             }
         }
         return false;
+    }
+
+    public void move(Piece pickupPiece, Piece putPositionPiece) {
+        setPiece(pickupPiece, putPositionPiece.getPosition());
+        pickupPiece.move(putPositionPiece.getPosition());
+
+        // En passant
+        Pawn behindTwoMovePawn = getBehindTwoMovePawn(pickupPiece.isWhite(), putPositionPiece);
+        if (behindTwoMovePawn != null) {
+            Piece none = new None(new Position(behindTwoMovePawn.getPosition().getRow(), behindTwoMovePawn.getPosition().getCol()), false);
+            setPiece(none, behindTwoMovePawn.getPosition());
+        }
+    }
+
+    public Pawn getBehindTwoMovePawn(Boolean playerWhite, Piece putPiece) {
+        int behindRow = playerWhite ? putPiece.getPosition().getRow()-1:putPiece.getPosition().getRow() +1;
+        if (behindRow >= MAX_BOARD_ROW || behindRow < MIN_BOARD_ROW-1) return null;
+        Piece behindPiece = board[behindRow][putPiece.getPosition().getCol()];
+        if (behindPiece instanceof Pawn) {
+            Pawn behindPawn = (Pawn)behindPiece;
+            if (behindPawn.isAfterMoveTwo) {
+                return behindPawn;
+            }
+        }
+        return null;
     }
 
     public void initBoard() {
