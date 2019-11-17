@@ -9,11 +9,8 @@ public class Rook extends Piece{
     }
 
     @Override
-    public Boolean isValidMove(Position newPosition,
-                               Boolean isNewPositionSameColor,
-                               Boolean isExistBetween,
-                               Boolean isNotExistEnemyOnNewPosition) {
-        if (!super.isValidMove(newPosition, isNewPositionSameColor, isExistBetween, isNotExistEnemyOnNewPosition)) {
+    public Boolean isValidMove(Position newPosition) {
+        if (!super.isValidMove(newPosition)) {
             return false;
         }
         int newRow = newPosition.getRow();
@@ -23,9 +20,19 @@ public class Rook extends Piece{
         // It's not same position
         // When Row is same position, Col can be anywhere
         // When Col is same position, Row can be anywhere
-        if ((newRow == oldRow || newCol == oldCol) && !isExistBetween) {
+        if (!(newRow == oldRow && newCol == oldCol)
+                && ((newRow == oldRow && newCol != oldCol)
+                || newCol == oldCol && newRow != oldCol)) {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void move(Board board, Position newPosition) {
+        if (isValidMove(newPosition)) {
+            board.setPiece(this, newPosition);
+            super.position = newPosition;
+        }
     }
 }
