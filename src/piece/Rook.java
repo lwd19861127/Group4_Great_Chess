@@ -1,6 +1,5 @@
 package piece;
 
-import controller.Board;
 import controller.Position;
 
 public class Rook extends Piece{

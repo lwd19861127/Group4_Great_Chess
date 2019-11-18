@@ -8,6 +8,7 @@ public class Game {
     private static String RE_INPUT = "reinput";
     private static String MESSAGE_INPUT_PICKUP = "Which piece would you like to pick up?";
     private static String MESSAGE_INPUT_PUT = "Enter position you wanna put.\nif you want to change picked up piece, Enter \"reinput\"";
+    private static String MESSAGE_INPUT_PROMOTION = "You can promote your Pawn. Choose \"queen\", \"rook\", \"bishop\", \"knight\"";
     private static String MESSAGE_INPUT_INVALID = "Invalid input, ";
     private static String MESSAGE_WHITE_TURN = "White's turn, ";
     private static String MESSAGE_BLACK_TURN = "Black's turn, ";
@@ -51,40 +52,60 @@ public class Game {
     }
 
     private void moveProcess(Player player) {
-        String input = getUserStringInput(MESSAGE_INPUT_PICKUP, false);
+        String input = getUserStringInput(MESSAGE_INPUT_PICKUP, false, false);
         Piece pickupPiece = board.getPiece(Position.getPosition(input));
 
         // check can get own piece
         while(board.isValidPickup(pickupPiece, player.isWhite())) {
-            input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PICKUP, false);
+            input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PICKUP, false, false);
             pickupPiece = board.getPiece(Position.getPosition(input));
         }
 
-        input = getUserStringInput(MESSAGE_INPUT_PUT, true);
+        input = getUserStringInput(MESSAGE_INPUT_PUT, true, false);
         if (input.equals(RE_INPUT)) return;
-        Piece putPositionPiece = board.getPiece(Position.getPosition(input));
+        Piece putPiece = board.getPiece(Position.getPosition(input));
 
         // check input is "reinput" or valid put position
-        while (!board.isValidPut(pickupPiece, putPositionPiece, player.isWhite())) {
-            input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PUT, true);
+        while (!board.isValidPutCastling(pickupPiece, putPiece) &&
+                !board.isValidPutNormal(pickupPiece, putPiece, player.isWhite())) {
+            input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PUT, true, false);
             if (input.equals(RE_INPUT)) return;
-            putPositionPiece = board.getPiece(Position.getPosition(input));
+            putPiece = board.getPiece(Position.getPosition(input));
         }
-        board.move(pickupPiece, putPositionPiece);
 
+        // Promotion
+        if (board.canPromote(pickupPiece, putPiece)) {
+            input = getUserStringInput(MESSAGE_INPUT_PROMOTION, false, true);
+
+            // check can get own piece
+            while(!PieceEnum.validPromotion(input)) {
+                input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PROMOTION, false, true);
+            }
+            board.promoteMove(pickupPiece, putPiece, PieceEnum.get(input));
+        } else if(board.isValidPutCastling(pickupPiece, putPiece)) {
+            board.castlingMove(pickupPiece, putPiece);
+        } else {
+            board.move(pickupPiece, putPiece);
+        }
         // change player turn
         isWhiteTurn = !isWhiteTurn;
     }
 
-    private String getUserStringInput(String prompt, Boolean canInputAgain) {
+    private String getUserStringInput(String prompt, Boolean canInputAgain, Boolean canPromote) {
         try {
             System.out.println(prompt);
             String input = new Scanner(System.in).nextLine();
             if (canInputAgain && input.equals(RE_INPUT)) {
                 return input;
             }
+            else if (canPromote && PieceEnum.validPromotion(input)) {
+                return input;
+            }
             while (!isValidInput(input)) {
-                input = getUserStringInput(MESSAGE_INPUT_INVALID + prompt, canInputAgain);
+                input = getUserStringInput(
+                        prompt.indexOf(MESSAGE_INPUT_INVALID) == -1 ? MESSAGE_INPUT_INVALID + prompt : prompt,
+                        canInputAgain,
+                        canPromote);
             }
             return input;
         } catch (Exception e) {
@@ -94,7 +115,7 @@ public class Game {
     }
 
     private static boolean isValidInput(String input) {
-        if (input.length() < 2) {
+        if (input.length() != 2) {
             return false;
         }
         String string1 = input.substring(0, 1);
