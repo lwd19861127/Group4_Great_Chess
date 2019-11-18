@@ -1,8 +1,5 @@
 package piece;
 
-import controller.Board;
-import controller.Position;
-
 public class Bishop extends Piece{
     public Bishop(Position position, Boolean isWhite) {
         super(position, isWhite, isWhite?"♗":"♝");

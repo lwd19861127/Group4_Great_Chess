@@ -1,4 +1,4 @@
-package controller;
+package piece;
 
 public class Position {
     private int row;

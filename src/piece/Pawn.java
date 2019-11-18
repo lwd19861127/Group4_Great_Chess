@@ -1,8 +1,5 @@
 package piece;
 
-import controller.Board;
-import controller.Position;
-
 public class Pawn extends Piece{
     public boolean isAfterMoveTwo = false;
 

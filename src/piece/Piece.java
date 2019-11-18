@@ -1,9 +1,11 @@
 package piece;
 
-import controller.Board;
-import controller.Position;
-
 public abstract class Piece implements Cloneable {
+
+    public final static int MAX_BOARD_ROW = 8;
+    public final static int MAX_BOARD_COL = 8;
+    public final static int MIN_BOARD_ROW = 1;
+    public final static int MIN_BOARD_COL = 1;
 
     protected Position position;
     protected Boolean isWhite;
@@ -68,8 +70,8 @@ public abstract class Piece implements Cloneable {
                                Boolean isExistBetween,
                                Boolean isNotExistEnemyOnNewPosition) {
         return (position.getRow() != newPosition.getRow() || position.getCol() != newPosition.getCol())
-                && newPosition.getRow() > Board.MIN_BOARD_ROW - 2 && newPosition.getCol() > Board.MIN_BOARD_COL - 2
-                && newPosition.getRow() < Board.MAX_BOARD_ROW && newPosition.getCol() < Board.MAX_BOARD_COL
+                && newPosition.getRow() > MIN_BOARD_ROW - 2 && newPosition.getCol() > MIN_BOARD_COL - 2
+                && newPosition.getRow() < MAX_BOARD_ROW && newPosition.getCol() < MAX_BOARD_COL
                 && !isNewPositionSameColor;
     }
 
@@ -78,6 +80,7 @@ public abstract class Piece implements Cloneable {
         isMoved = true;
     }
 
+    @Override
     public Object clone() {
         Object copy = null;
         try {

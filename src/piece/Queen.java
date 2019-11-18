@@ -1,7 +1,5 @@
 package piece;
 
-import controller.Position;
-
 public class Queen extends Piece{
     public Queen(Position position, Boolean isWhite) {
         super(position, isWhite, isWhite?"♔":"♚");
