@@ -66,7 +66,8 @@ public class Game {
         Piece putPiece = board.getPiece(Position.getPosition(input));
 
         // check input is "reinput" or valid put position
-        while (!board.isValidPut(pickupPiece, putPiece, player.isWhite())) {
+        while (!board.isValidPutCastling(pickupPiece, putPiece) &&
+                !board.isValidPutNormal(pickupPiece, putPiece, player.isWhite())) {
             input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PUT, true, false);
             if (input.equals(RE_INPUT)) return;
             putPiece = board.getPiece(Position.getPosition(input));
@@ -81,6 +82,8 @@ public class Game {
                 input = getUserStringInput(MESSAGE_INPUT_INVALID + MESSAGE_INPUT_PROMOTION, false, true);
             }
             board.promoteMove(pickupPiece, putPiece, PieceEnum.get(input));
+        } else if(board.isValidPutCastling(pickupPiece, putPiece)) {
+            board.castlingMove(pickupPiece, putPiece);
         } else {
             board.move(pickupPiece, putPiece);
         }

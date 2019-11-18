@@ -3,7 +3,7 @@ package piece;
 import controller.Board;
 import controller.Position;
 
-public abstract class Piece {
+public abstract class Piece implements Cloneable {
 
     protected Position position;
     protected Boolean isWhite;
@@ -76,5 +76,15 @@ public abstract class Piece {
     public void move(Position newPosition) {
         position = newPosition;
         isMoved = true;
+    }
+
+    public Object clone() {
+        Object copy = null;
+        try {
+            copy = (Piece)super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return copy;
     }
 }

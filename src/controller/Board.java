@@ -13,6 +13,7 @@ public class Board {
     public final static int MIN_BOARD_COL = 1;
     public final static List<String> POSITION_COLS = Arrays.asList("a","b","c","d","e","f","g","h");
     public final static List<String> POSITION_ROWS = Arrays.asList("1","2","3","4","5","6","7","8");
+    private final static int DEFAULT_KING_COL = 4;
 
     public Boolean isExistWhiteKing = true;
     private Piece[][] board = new Piece[MAX_BOARD_ROW][MAX_BOARD_COL];
@@ -47,12 +48,30 @@ public class Board {
         return pickupPiece instanceof None || !pickupPiece.isValidPickup(isPlayerWhite);
     }
 
-    public Boolean isValidPut(Piece pickupPiece, Piece putPositionPiece, Boolean isPlayerWhite) {
-        return pickupPiece.isValidMove(putPositionPiece.getPosition(),
-                putPositionPiece instanceof None ? false : putPositionPiece.isWhite() == isPlayerWhite,
-                isExistBetween(pickupPiece.getPosition(), putPositionPiece.getPosition()),
-                putPositionPiece instanceof None);
+    public Boolean isValidPutNormal(Piece pickupPiece, Piece putPiece, Boolean isPlayerWhite) {
+        return pickupPiece.isValidMove(putPiece.getPosition(),
+                putPiece instanceof None ? false : putPiece.isWhite() == isPlayerWhite,
+                isExistBetween(pickupPiece.getPosition(), putPiece.getPosition()),
+                putPiece instanceof None);
     }
+
+    public Boolean isValidPutCastling(Piece pickupPiece, Piece putPiece) {
+        int moveCol = Math.abs(pickupPiece.getPosition().getCol() - putPiece.getPosition().getCol());
+        Boolean isMoveRow = pickupPiece.getPosition().getRow() != putPiece.getPosition().getRow();
+        if (!(pickupPiece instanceof King) || moveCol != 2 || isMoveRow || pickupPiece.getMoved()) return false;
+        Piece nearPiece;
+        if (DEFAULT_KING_COL < putPiece.getPosition().getCol()) {
+            nearPiece = board[pickupPiece.getPosition().getRow()][putPiece.getPosition().getCol()+2];
+        } else {
+            nearPiece = board[pickupPiece.getPosition().getRow()][putPiece.getPosition().getCol()-1];
+        }
+        return (
+                nearPiece instanceof Rook &&
+                        pickupPiece.isWhite() == nearPiece.isWhite() &&
+                        !nearPiece.getMoved() &&
+                        !isExistBetween(pickupPiece.getPosition(), nearPiece.getPosition()));
+    }
+
     public Boolean isExistBetween(Position pickupPosition , Position putPosition) {
         int upperRow = pickupPosition.getRow() > putPosition.getRow() ? pickupPosition.getRow() : putPosition.getRow();
         int lowerRow = pickupPosition.getRow() < putPosition.getRow() ? pickupPosition.getRow() : putPosition.getRow();
@@ -106,23 +125,23 @@ public class Board {
         return false;
     }
 
-    public void enPassant(Piece pickupPiece, Piece putPositionPiece) {
-        Pawn behindTwoMovePawn = getBehindTwoMovePawn(pickupPiece.isWhite(), putPositionPiece);
+    public void enPassant(Piece pickupPiece, Piece putPiece) {
+        Pawn behindTwoMovePawn = getBehindTwoMovePawn(pickupPiece.isWhite(), putPiece);
         Piece none = new None(new Position(behindTwoMovePawn.getPosition().getRow(), behindTwoMovePawn.getPosition().getCol()), false);
         setPiece(none, behindTwoMovePawn.getPosition());
     }
 
-    public void move(Piece pickupPiece, Piece putPositionPiece) {
-        setPiece(pickupPiece, putPositionPiece.getPosition());
-        pickupPiece.move(putPositionPiece.getPosition());
+    public void move(Piece pickupPiece, Piece putPiece) {
+        setPiece(pickupPiece, putPiece.getPosition());
+        pickupPiece.move(putPiece.getPosition());
 
-        Boolean canEnPassant = getBehindTwoMovePawn(pickupPiece.isWhite(), putPositionPiece) != null;
+        Boolean canEnPassant = getBehindTwoMovePawn(pickupPiece.isWhite(), putPiece) != null;
         if (canEnPassant) {
-            enPassant(pickupPiece, putPositionPiece);
+            enPassant(pickupPiece, putPiece);
         }
     }
 
-    public void promoteMove(Piece pickupPiece, Piece putPositionPiece, PieceEnum changePiece) {
+    public void promoteMove(Piece pickupPiece, Piece putPiece, PieceEnum changePiece) {
         Piece newPiece;
         switch (changePiece) {
             case ROOK:
@@ -138,7 +157,27 @@ public class Board {
                 newPiece = new Queen(new Position(pickupPiece.getPosition().getRow(), pickupPiece.getPosition().getCol()),pickupPiece.isWhite());
                 break;
         }
-        move(newPiece, putPositionPiece);
+        move(newPiece, putPiece);
+    }
+
+    public void castlingMove(Piece pickupPiece, Piece putPiece) {
+        Piece rook;
+        if (DEFAULT_KING_COL < putPiece.getPosition().getCol()) {
+            rook = board[pickupPiece.getPosition().getRow()][putPiece.getPosition().getCol() + 2];
+        } else {
+            rook = board[pickupPiece.getPosition().getRow()][putPiece.getPosition().getCol() - 1];
+        }
+        Position castlingPosition = null;
+        if (rook.getPosition().getCol() == MAX_BOARD_COL-1) {
+            castlingPosition = new Position(pickupPiece.getPosition().getRow(), pickupPiece.getPosition().getCol() + 1);
+        } else if (rook.getPosition().getCol() == MIN_BOARD_COL-1) {
+            castlingPosition = new Position(pickupPiece.getPosition().getRow(), pickupPiece.getPosition().getCol() - 1);
+        }
+        Piece castlingRookPositionPiece = (Piece) rook.clone();
+        castlingRookPositionPiece.setPosition(castlingPosition);
+        
+        move(pickupPiece, putPiece);
+        move(rook, castlingRookPositionPiece);
     }
 
     public Pawn getBehindTwoMovePawn(Boolean playerWhite, Piece putPiece) {
