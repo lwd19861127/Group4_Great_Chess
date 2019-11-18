@@ -235,12 +235,12 @@ public class Board {
         Piece knightWhite2 = new Knight(new Position(0, 6), true);
         Piece rookWhite2 = new Rook(new Position(0, 7),true);
         board[7][0] = rookBlack1;
-        board[7][1] = new None(new Position(7, 1), false);
-        board[7][2] = new None(new Position(7, 2), false);
+        board[7][1] = knightBlack1;
+        board[7][2] = bishopBlack1;
         board[7][3] = kingBlack;
-        board[7][4] = new None(new Position(7, 4), false);
-        board[7][5] = new None(new Position(7, 5), false);
-        board[7][6] = new None(new Position(7, 6), false);
+        board[7][4] = queenBlack;
+        board[7][5] = bishopBlack2;
+        board[7][6] = knightBlack2;
         board[7][7] = rookBlack2;
         board[6][0] = pawnBlack1;
         board[6][1] = pawnBlack2;
@@ -266,12 +266,12 @@ public class Board {
         board[1][6] = pawnWhite7;
         board[1][7] = pawnWhite8;
         board[0][0] = rookWhite1;
-        board[0][1] = new None(new Position(0, 1), false);
-        board[0][2] = new None(new Position(0, 2), false);
+        board[0][1] = knightWhite1;
+        board[0][2] = bishopWhite1;
         board[0][3] = kingWhite;
-        board[0][4] = new None(new Position(0, 4), false);
-        board[0][5] = new None(new Position(0, 5), false);
-        board[0][6] = new None(new Position(0, 6), false);
+        board[0][4] = queenWhite;
+        board[0][5] = bishopWhite2;
+        board[0][6] = knightWhite2;
         board[0][7] = rookWhite2;
     }
 
