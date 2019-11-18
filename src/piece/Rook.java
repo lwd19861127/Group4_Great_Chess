@@ -1,7 +1,5 @@
 package piece;
 
-import controller.Position;
-
 public class Rook extends Piece{
     public Rook(Position position, Boolean isWhite) {
         super(position, isWhite, isWhite?"♖":"♜");

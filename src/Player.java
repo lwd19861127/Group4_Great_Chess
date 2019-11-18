@@ -1,5 +1,3 @@
-package controller;
-
 public class Player {
     private Boolean isWhite;
 

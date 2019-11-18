@@ -1,10 +1,8 @@
-package controller;
-
 import piece.*;
 
 import java.util.Scanner;
 
-public class Game {
+public class GameController {
     private static String RE_INPUT = "reinput";
     private static String MESSAGE_INPUT_PICKUP = "Which piece would you like to pick up?";
     private static String MESSAGE_INPUT_PUT = "Enter position you wanna put.\nif you want to change picked up piece, Enter \"reinput\"";
@@ -20,7 +18,7 @@ public class Game {
     private Player blackPlayer;
     private Boolean isWhiteTurn;
 
-    public Game() {
+    public GameController() {
         board = new Board();
         whitePlayer = new Player(true);
         blackPlayer = new Player(false);

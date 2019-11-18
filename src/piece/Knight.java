@@ -1,8 +1,5 @@
 package piece;
 
-import controller.Board;
-import controller.Position;
-
 public class Knight extends Piece{
     public Knight(Position position, Boolean isWhite) {
         super(position, isWhite, isWhite?"♘":"♞");

@@ -1,7 +1,5 @@
 package piece;
 
-import controller.Position;
-
 public class King extends Piece {
 
     public King(Position position, Boolean isWhite) {
